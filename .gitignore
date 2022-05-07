@@ -1,3 +1,4 @@
 env
 config
 logs
+cogs/__pycache__/commands.cpython-310.pyc
