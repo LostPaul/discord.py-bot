@@ -1,18 +1,17 @@
 import discord
 
-import os
-from dotenv import load_dotenv
+from utils.abc import Bot
+from config.config import Token
 
-load_dotenv()
+intents = discord.Intents.default()
+intents.typing = False
 
-DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+bot = Bot("?", intents=intents)
 
-class MyClient(discord.Client):
-    async def on_ready(self):
-        print('Logged on as {0}!'.format(self.user))
 
-    async def on_message(self, message):
-        print('Message from {0.author}: {0.content}'.format(message))
+@bot.event
+async def on_ready():
+    bot.logger.info(f"Logged in as {bot.user.name} ({bot.user.id})")
 
-client = MyClient()
-client.run(DISCORD_BOT_TOKEN)
+
+bot.run(Token.bot)
