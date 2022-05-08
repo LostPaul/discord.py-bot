@@ -7,12 +7,12 @@ intents = discord.Intents.default()
 intents.guild_messages = True
 intents.typing = False
 
-bot = Bot("?", intents=intents)
+client = Bot("?", intents=intents)
 
 
-@bot.event
+@client.event
 async def on_ready():
-    bot.logger.info(f"Logged in as {bot.user.name} ({bot.user.id})")
+    client.logger.info(f"Logged in as {client.user.name} ({client.user.id})")
 
 
-bot.run(Token.bot)
+client.run(Token.bot)
