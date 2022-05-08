@@ -4,6 +4,7 @@ from utils.abc import Bot
 from config.config import Token
 
 intents = discord.Intents.default()
+intents.guild_messages = True
 intents.typing = False
 
 bot = Bot("?", intents=intents)

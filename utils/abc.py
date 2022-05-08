@@ -67,7 +67,7 @@ class Bot(commands.Bot):
 
     async def setup_hook(self):
 
-        extensions = ["cogs.commands"]
+        extensions = ["cogs.commands", "cogs.message_commands"]
 
         for cog in extensions:
             try:
@@ -77,7 +77,7 @@ class Bot(commands.Bot):
                 self.logger.error(
                     f"Failed to load extension {cog}:\n{traceback.format_exc()}"
                 )
-
+                
         sycned = await self.tree.sync()
 
         slash_commands = "\n".join(

@@ -1,10 +1,13 @@
 import discord
 import datetime
+import textwrap
 from discord.ext import commands
 from discord import app_commands
 from utils.abc import Bot
 from typing import List
-from utils.getEmojis import getEmojis
+from utils.functions import getEmojis
+from utils.functions import split_message
+
 
 
 class Commands(commands.Cog):
@@ -12,21 +15,21 @@ class Commands(commands.Cog):
         self.bot = bot
 
         #  self.cached_emojis = dict[int, dict[list, datetime.datetime]] = {}
-
+    
     @app_commands.command()
-    async def test(self, itx: discord.Interaction):
+    async def test(self, interaction: discord.Interaction):
         """Test command"""
-        await itx.response.send_message("test")
+        await interaction.response.send_message("test")
 
     @app_commands.command()
-    async def say(self, itx: discord.Interaction, text: str):
+    async def say(self, interaction: discord.Interaction, text: str):
         """Say something"""
-        await itx.response.send_message("text sent", ephemeral=True)
-        await itx.channel.send(text)
+        await interaction.response.send_message("text sent", ephemeral=True)
+        await interaction.channel.send(text)
 
     @app_commands.command()
     async def emojiinfo(self, interaction: discord.Interaction, emoji: str):
-        """Get info about emoji"""
+        """Get information about an emoji"""
         emoji = await interaction.guild.fetch_emoji(emoji)
         embed = discord.Embed(
             title="Emoji info",
@@ -50,6 +53,15 @@ class Commands(commands.Cog):
             return [app_commands.Choice(name=emoji["name"], value=emoji["id"]) for emoji in getEmojis(current) if await interaction.guild.fetch_emoji(emoji["id"]) is not None]
         else:
             return [app_commands.Choice(name=emoji.name, value=str(emoji.id)) for emoji in guildEmojis if current.lower() in emoji.name.lower()][0:25]
+
+    @app_commands.command()
+    @app_commands.checks.has_permissions(manage_roles=True)
+    async def emojis_list(self, interaction: discord.Interaction):
+        """List all emojis"""
+        guildEmojis = await interaction.guild.fetch_emojis()
+        emojiList = '\n'.join(f"{emoji} - `{emoji}`" for emoji in guildEmojis)
+        for content in split_message(emojiList):
+            await interaction.channel.send(content=content)
 
 
 async def setup(bot: Bot) -> None:
