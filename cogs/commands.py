@@ -7,6 +7,7 @@ from utils.abc import Bot
 from typing import List
 from utils.functions import getEmojis
 from utils.functions import split_message
+from multiprocessing import Process
 
 
 class Commands(commands.Cog):
@@ -47,7 +48,8 @@ class Commands(commands.Cog):
         embed.add_field(name="Created at",
                         value=f"<t:{int(emoji.created_at.timestamp())}:D>")
         embed.add_field(name="Uploaded by", value=emoji.user)
-        embed.add_field(name="Download link", value=f"[Click here]({emoji.url})")
+        embed.add_field(name="Download link",
+                        value=f"[Click here]({emoji.url})")
         await interaction.response.send_message(content=f"`{emoji}`", embed=embed)
 
     @emojiinfo.autocomplete("emoji_id")
@@ -61,8 +63,8 @@ class Commands(commands.Cog):
                 "datetime": discord.utils.utcnow(),
             }
         else:
-            timeframe = datetime.timedelta(seconds=60*5) # Zeit, wie lange der Cache gültig ist: 5 Minuten
-            if raw_emoji_data["datetime"] + timeframe <= discord.utils.utcnow(): # Wenn die Zeit zu lang ist wird der Eintrag gelöscht und neu gefetcht
+            timeframe = datetime.timedelta(seconds=60*5)
+            if raw_emoji_data["datetime"] + timeframe <= discord.utils.utcnow():
                 self.cached_emojis.pop(interaction.guild_id)
                 raw_emojis = await interaction.guild.fetch_emojis()
                 self.cached_emojis[interaction.guild_id] = {
@@ -74,9 +76,16 @@ class Commands(commands.Cog):
 
         results = []
 
-        for sub in raw_emojis:
-            if all(i in sub.name and sub.name.count(i) >= current.count(i) for i in current):
-                results.append(app_commands.Choice(name=sub.name.lower(), value=str(sub.id)))
+        if (len(getEmojis(current)) > 0):
+            for sub in raw_emojis:
+                if str(sub.id) in [(emoji["id"])for emoji in getEmojis(current)]:
+                    results.append(app_commands.Choice(
+                        name=sub.name.lower(), value=str(sub.id)))
+        else:
+            for sub in raw_emojis:
+                if all(i in sub.name and sub.name.count(i) >= current.count(i) for i in current) or str(sub.id) in current:
+                    results.append(app_commands.Choice(
+                        name=sub.name.lower(), value=str(sub.id)))
 
         return results[0:25]
 
