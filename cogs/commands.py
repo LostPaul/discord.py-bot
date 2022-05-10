@@ -36,7 +36,7 @@ def shorten_text(text: str, *, length: int = 100, suffix: str = "...") -> str:
 class Commands(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.cached_emojis = dict[int, dict[list, datetime.datetime]] = {}
+        self.cached_emojis: dict[int, dict[list, datetime.datetime]] = {}
 
     @app_commands.command()
     async def test(self, interaction: discord.Interaction):
@@ -100,7 +100,7 @@ class Commands(commands.Cog):
 
         for sub in raw_emojis:
             if all(i in sub.name and sub.name.count(i) >= current.count(i) for i in current):
-                results.append(app_commands.Choice(name=shorten_text(sub.name), value=sub.id))
+                results.append(app_commands.Choice(name=sub.name.lower(), value=str(sub.id)))
 
         return results[0:25]
 
