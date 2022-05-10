@@ -34,3 +34,29 @@ def getEmojis(input: str):
         if not emoji in emojis:
             emojis.append(emoji)
     return emojis
+
+
+def shorten_text(text: str, *, length: int = 100, suffix: str = "...") -> str:
+    """Kürzt einen bestimmten Text auf length. 
+    Falls der Text ohne weiteres in die Länge passt, wird er direkt returned.
+    Andernfalls wird er auf `length - len(suffix)` gekürzt und der Suffix wird angehängt.
+    
+    
+    Parameters
+    ----------
+    text: `str`
+        Text, welcher gekürzt werden soll
+    length: `int = 100`
+        Maximale Länge des neuen Texts
+    suffix: `str = "..."`
+        Zusätzlicher String welcher ans Ende vom gekürzten Text angehangen wird
+    
+    Returns
+    -------
+    `str`
+        Den maximal length langen Text.
+    """
+    if len(text) > length:
+        _ = text[: length - len(suffix)]
+        text = _ + suffix
+    return text
